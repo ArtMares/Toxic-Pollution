@@ -1,10 +1,10 @@
 {
-	"name": "deadlyPollution",
-	"version": "0.2.1",
-	"title": "Deadly pollution",
-	"factorio_version": "0.16",
-	"author": "Likos, ArtMares, ViridiVir",
-	"dependencies": ["? air-filtering-patched >= 0.5.0"],
-	"homepage": "https://github.com/ArtMares/deadlyPollution",
-	"description": "Now pollution will damage player without armor"
+    "name": "deadlyPollution",
+    "version": "0.2.1",
+    "title": "Deadly pollution",
+    "factorio_version": "0.16",
+    "author": "Likos, ArtMares, ViridiVir",
+    "dependencies": ["? air-filtering-patched >= 0.5.0"],
+    "homepage": "https://github.com/ArtMares/deadlyPollution",
+    "description": "Now pollution will damage player without armor"
 }
