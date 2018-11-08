@@ -149,6 +149,8 @@ local function initTechAbsorbs()
 end
 
 script.on_init(function()
+    local force = game.create_force("pollution")
+
     initArmorAbsorbs()
     initTechAbsorbs()
 end)
@@ -192,7 +194,7 @@ script.on_nth_tick(tickInterval, function(event)
                         armor.drain_durability(damage)
                         equipArmorFromInventory(player, armor)
                     else
-                        player.character.damage(damage, game.forces.neutral, "fire")
+                        player.character.damage(damage, game.forces.pollution, "toxic")
                     end
                 end
             end
