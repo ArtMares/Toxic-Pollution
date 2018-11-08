@@ -22,17 +22,21 @@ local checkInventory = {
 }
 
 local function addAlert(player, signal, message)
-    local alerts = player.get_alerts{entity = player.character, type = defines.alert_type.custom, surface = player.surface}
-    for _, alert in pairs(alerts) do
-        if (alert.icon == SignalID[signal]) then
-            return
+    if player.character then
+        local alerts = player.get_alerts{entity = player.character, type = defines.alert_type.custom, surface = player.surface}
+        for _, alert in pairs(alerts) do
+            if (alert.icon == SignalID[signal]) then
+                return
+            end
         end
+        player.add_custom_alert(player.character, SignalID[signal], message, false)
     end
-    player.add_custom_alert(player.character, SignalID[signal], message, false)
 end
 
 local function removeAlert(player, signal)
-    player.remove_alert{entity = player.character, surface = player.surface, icon = SignalID[signal]}
+    if player.character then
+        player.remove_alert{entity = player.character, surface = player.surface, icon = SignalID[signal] }
+    end
 end
 
 local function getPollution(player)
@@ -45,6 +49,10 @@ end
 
 local function getEquipedArmor(player)
     return player.get_inventory(defines.inventory.player_armor)[1]
+end
+
+local function addForce()
+    game.create_force("pollution")
 end
 
 --local function equipArmor(inventory, armor)
@@ -149,13 +157,13 @@ local function initTechAbsorbs()
 end
 
 script.on_init(function()
-    local force = game.create_force("pollution")
-
+    addForce()
     initArmorAbsorbs()
     initTechAbsorbs()
 end)
 
 script.on_configuration_changed(function()
+    addForce()
     initArmorAbsorbs()
     initTechAbsorbs()
 end)
@@ -194,6 +202,8 @@ script.on_nth_tick(tickInterval, function(event)
                         armor.drain_durability(damage)
                         equipArmorFromInventory(player, armor)
                     else
+                        -- Old version Hard Damage
+--                        player.character.damage(floor(pollution/absorb), game.forces.pollution, "toxic")
                         player.character.damage(damage, game.forces.pollution, "toxic")
                     end
                 end
