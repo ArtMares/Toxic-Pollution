@@ -9,7 +9,8 @@ data:extend({
             {type = "physical",     decrease = 0, percent = 0},
             {type = "acid",         decrease = 0, percent = 0},
             {type = "explosion",    decrease = 0, percent = 0},
-            {type = "fire",         decrease = 0, percent = 0}
+            {type = "fire",         decrease = 0, percent = 0},
+            {type = "toxic",        decrease = 10, percent = 0}
         },
         durability = 500,
         subgroup = "armor",
