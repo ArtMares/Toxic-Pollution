@@ -55,29 +55,6 @@ local function addForce()
     game.create_force("pollution")
 end
 
---local function equipArmor(inventory, armor)
---    local isChanged = false
---    local durability = global.armorMaxDurability
---    local index = 0
---
---    if (inventory ~= nil) then
---        for i = 1, #inventory do
---            local item = inventory[i]
---            if (item.is_armor) then
---                if (item.durability < durability) then
---                    durability = item.durability
---                    index = i
---                end
---            end
---        end
---    end
---    if (index > 0) then
---        armor.transfer_stack(inventory[index])
---        isChanged = true
---    end
---    return isChanged
---end
-
 local function equipArmorFromInventory(player, armor)
     if(armor.is_armor == false) then
         if(autoEqipArmor) then
@@ -107,7 +84,7 @@ local function equipArmorFromInventory(player, armor)
 end
 
 local function updateTechAbsorb(techName, force)
-    local n = string.match(techName, "respiration?-lifeTime?-(%d)")
+    local n = string.match(techName, "armor?-absorb?-(%d)")
     if n ~= nil then
         local bonus = forceBaseValue + tonumber(n) * techBonus
         global.techAbsorb[force.name] = bonus
@@ -125,13 +102,13 @@ local function initArmorAbsorbs()
         global.armorsAbsorb = {}
     end
     if (game) then
-        for i, item in pairs(game.item_prototypes) do
+        for _, item in pairs(game.item_prototypes) do
             if (item.type == "armor") then
                 if (global.armorMaxDurability < item.durability) then
                     global.armorMaxDurability = item.durability
                 end
-                if (item.resistances and item.resistances.fire) then
-                    global.armorsAbsorb[item.name] = armorAbsorbMultiplicator*math.min(tonumber(string.format("%.2f", item.resistances.fire.percent)), 0.9)
+                if (item.resistances and item.resistances.toxin) then
+                    global.armorsAbsorb[item.name] = armorAbsorbMultiplicator*math.min(tonumber(string.format("%.2f", item.resistances.toxin.percent)), 0.9)
                 else
                     global.armorsAbsorb[item.name] = 0
                 end
@@ -156,6 +133,11 @@ local function initTechAbsorbs()
     end
 end
 
+local function calculateDamage(pollution, absorb, force)
+    local damage = math.max(pollution - absorb, 0)/stat/global.techAbsorb[force]
+    return damage
+end
+
 script.on_init(function()
     addForce()
     initArmorAbsorbs()
@@ -174,7 +156,7 @@ script.on_event({defines.events.on_player_joined_game}, function()
 end)
 
 script.on_nth_tick(tickInterval, function(event)
-    for i, player in pairs(game.players) do
+    for _, player in pairs(game.players) do
         if (player.connected == true and player.character ~= nil) then
             local armor = nil
             local alert = 0
@@ -189,7 +171,7 @@ script.on_nth_tick(tickInterval, function(event)
                     end
                 end
                 if (pollution > absorb) then
-                    local damage = math.max(pollution - absorb, 0)/stat/global.techAbsorb[player.force.name]
+                    local damage = calculateDamage(pollution, absorb, player.force.name)
                     if (damage > 1) then
                         alert = 2
                     else
@@ -204,7 +186,7 @@ script.on_nth_tick(tickInterval, function(event)
                     else
                         -- Old version Hard Damage
 --                        player.character.damage(floor(pollution/absorb), game.forces.pollution, "toxic")
-                        player.character.damage(damage, game.forces.pollution, "toxic")
+                        player.character.damage(damage, game.forces.pollution, "toxin")
                     end
                 end
             end
@@ -225,7 +207,5 @@ end)
 
 script.on_event(defines.events.on_research_finished, function(event)
     local tech = event.research
-    if (updateTechAbsorb(tech.name, tech.force)) then
-        tech.force.recipes["clock-dummy"].enabled = false
-    end
+    updateTechAbsorb(tech.name, tech.force)
 end)

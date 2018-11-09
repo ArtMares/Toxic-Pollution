@@ -2,7 +2,7 @@ data:extend(
 {
     {
         type = "damage-type",
-        name = "toxic"
+        name = "toxin"
     }
 }
 )
