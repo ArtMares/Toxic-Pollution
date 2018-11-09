@@ -21,7 +21,7 @@ data:extend({
     {
         type = "technology",
         name = "armor-absorb-1",
-        icon = "__toxinPollution__/graphics/gas-time-research.png",
+        icon = "__toxicPollution__/graphics/gas-time-research.png",
         icon_size = 128,
         effects = {
             {type = "nothing", effect_description={"Inc-absorb-armor"}}
@@ -41,7 +41,7 @@ for i = 2, 25 do
         {
             type = "technology",
             name = "armor-absorb-"..i,
-            icon = "__toxinPollution__/graphics/gas-time-research.png",
+            icon = "__toxicPollution__/graphics/gas-time-research.png",
             icon_size = 128,
             effects = {
                 {type = "nothing", effect_description={"Inc-absorb-armor"}}

@@ -52,7 +52,9 @@ local function getEquipedArmor(player)
 end
 
 local function addForce()
-    game.create_force("pollution")
+    if not game.forces.pollution then
+        game.create_force("pollution")
+    end
 end
 
 local function equipArmorFromInventory(player, armor)
@@ -191,9 +193,9 @@ script.on_nth_tick(tickInterval, function(event)
                 end
             end
             if (alert == 1) then
-                addAlert(player, "yellow-gas-mask", {"High-pollution"})
+                addAlert(player, "yellow-gas-mask", {"High-pollution", pollution})
             elseif (alert == 2) then
-                addAlert(player, "red-gas-mask", {"Very-high-pollution"})
+                addAlert(player, "red-gas-mask", {"Very-high-pollution", pollution})
             elseif (alert == 3) then
                 addAlert(player, "red-armor", {"Armor-worn-out"})
             else

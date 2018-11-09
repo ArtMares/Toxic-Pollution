@@ -2,7 +2,7 @@ data:extend({
     {
         type = "armor",
         name = "respirator",
-        icon = "__toxinPollution__/graphics/respirator.png",
+        icon = "__toxicPollution__/graphics/respirator.png",
         icon_size = 64,
         flags = {"goes-to-main-inventory"},
         resistances = {
