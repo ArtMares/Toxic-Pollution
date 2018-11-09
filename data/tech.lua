@@ -20,11 +20,11 @@ end
 data:extend({
     {
         type = "technology",
-        name = "respiration-lifeTime-1",
-        icon = "__deadlyPollution__/graphics/gas-time-research.png",
+        name = "armor-absorb-1",
+        icon = "__toxinPollution__/graphics/gas-time-research.png",
         icon_size = 128,
         effects = {
-            {type = "unlock-recipe", recipe = "clock-dummy"}
+            {type = "nothing", effect_description={"Inc-absorb-armor"}}
         },
         unit = {
             count = 10,
@@ -40,13 +40,13 @@ for i = 2, 25 do
     data:extend({
         {
             type = "technology",
-            name = "respiration-lifeTime-"..i,
-            icon = "__deadlyPollution__/graphics/gas-time-research.png",
+            name = "armor-absorb-"..i,
+            icon = "__toxinPollution__/graphics/gas-time-research.png",
             icon_size = 128,
             effects = {
-                {type = "unlock-recipe", recipe = "clock-dummy"}
+                {type = "nothing", effect_description={"Inc-absorb-armor"}}
             },
-            prerequisites = {"respiration-lifeTime-"..(i - 1)},
+            prerequisites = {"armor-absorb-"..(i - 1)},
             unit = {
                 count = i*10,
                 ingredients = getIngridients(i),
@@ -57,25 +57,3 @@ for i = 2, 25 do
         }
     })
 end
-
--- 
---[[
-data:extend({
-    {
-        type = "technology",
-        name = "respiration-lifeTime-"..i,
-        icon = "__deadlyPollution__/graphics/gas-time-research.png",
-        icon_size = 128,
-        effects = {
-            {type = "unlock-recipe", recipe = "clock-dummy"}
-        },
-        unit = {
-            count = i*10,
-            ingredients = getIngridients(i),
-            time = i*5
-        },
-        upgrade = true,
-        order = "c-k-f-e"
-    }
-})
-]]
