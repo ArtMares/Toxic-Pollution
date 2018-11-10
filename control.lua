@@ -140,21 +140,31 @@ local function calculateDamage(pollution, absorb, force)
     return damage
 end
 
+local function createInvisibleKillerFish()
+    if(global.killer == nil) then
+        global.killer = game.surfaces[1].create_entity{name = "pollution", position = {x = 1, y = 1}, force = game.forces.pollution}
+        global.killer.active = false
+    end
+end
+
 script.on_init(function()
     addForce()
     initArmorAbsorbs()
     initTechAbsorbs()
+    createInvisibleKillerFish()
 end)
 
 script.on_configuration_changed(function()
     addForce()
     initArmorAbsorbs()
     initTechAbsorbs()
+    createInvisibleKillerFish()
 end)
 
 script.on_event({defines.events.on_player_joined_game}, function()
     initArmorAbsorbs()
     initTechAbsorbs()
+    createInvisibleKillerFish()
 end)
 
 script.on_nth_tick(tickInterval, function(event)
@@ -187,8 +197,13 @@ script.on_nth_tick(tickInterval, function(event)
                         equipArmorFromInventory(player, armor)
                     else
                         -- Old version Hard Damage
---                        player.character.damage(floor(pollution/absorb), game.forces.pollution, "toxic")
-                        player.character.damage(damage, game.forces.pollution, "toxin")
+                        -- player.character.damage(floor(pollution/absorb), game.forces.pollution, "toxic")
+
+                        if(player.character.health > damage) then
+                            player.character.damage(damage, game.forces.pollution, "toxin")
+                        else
+                            player.character.die(game.forces.pollution, global.killer)
+                        end
                     end
                 end
             end
