@@ -161,7 +161,7 @@ script.on_configuration_changed(function()
     createInvisibleKillerFish()
 end)
 
-script.on_event({defines.events.on_player_joined_game}, function()
+script.on_event(defines.events.on_player_joined_game, function()
     initArmorAbsorbs()
     initTechAbsorbs()
     createInvisibleKillerFish()
@@ -173,6 +173,7 @@ script.on_nth_tick(tickInterval, function(event)
             local armor = nil
             local alert = 0
             local pollution = getPollution(player)
+            local damage = 0
             if (pollution > 0) then
                 local absorb = minPollutionToDamage
                 local armorCount = getEquipedArmorCount(player)
@@ -183,7 +184,7 @@ script.on_nth_tick(tickInterval, function(event)
                     end
                 end
                 if (pollution > absorb) then
-                    local damage = calculateDamage(pollution, absorb, player.force.name)
+                    damage = calculateDamage(pollution, absorb, player.force.name)
                     if (damage > 1) then
                         alert = 2
                     else
@@ -196,9 +197,8 @@ script.on_nth_tick(tickInterval, function(event)
                         armor.drain_durability(damage)
                         equipArmorFromInventory(player, armor)
                     else
-                        -- Old version Hard Damage
-                        -- player.character.damage(floor(pollution/absorb), game.forces.pollution, "toxic")
-
+                        alert = 2
+                        damage = floor(pollution/absorb)
                         if(player.character.health > damage) then
                             player.character.damage(damage, game.forces.pollution, "toxin")
                         else
@@ -208,11 +208,11 @@ script.on_nth_tick(tickInterval, function(event)
                 end
             end
             if (alert == 1) then
-                addAlert(player, "yellow-gas-mask", {"High-pollution", pollution})
+                addAlert(player, "yellow-gas-mask", {"High-pollution", pollution, string.format("%.2f", damage)})
             elseif (alert == 2) then
-                addAlert(player, "red-gas-mask", {"Very-high-pollution", pollution})
+                addAlert(player, "red-gas-mask", {"Very-high-pollution", pollution, string.format("%.2f", damage)})
             elseif (alert == 3) then
-                addAlert(player, "red-armor", {"Armor-worn-out"})
+                addAlert(player, "red-armor", {"Armor-worn-out", pollution, string.format("%.2f", damage)})
             else
                 removeAlert(player, "yellow-gas-mask")
                 removeAlert(player, "red-gas-mask")
