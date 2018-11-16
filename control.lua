@@ -213,7 +213,7 @@ script.on_nth_tick(tickInterval, function(event)
                             player.character.damage(damage, game.forces.pollution, "toxin")
                         else
                             player.character.die(game.forces.pollution, global.killer)
-                            gloabl.kills = global.kills + 1
+                            global.kills = global.kills + 1
                         end
                     end
                 end
