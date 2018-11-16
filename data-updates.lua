@@ -2,7 +2,7 @@
 
 local armorsToxin = {
     -- Base Mod
-    {name = "ligth-armor", decrease = 0, percent = 10},
+    {name = "light-armor", decrease = 0, percent = 10},
     {name = "heavy-armor", decrease = 0, percent = 30},
     {name = "modular-armor", decrease = 0, percent = 40},
     {name = "power-armor", decrease = 0, percent = 60},
