@@ -145,6 +145,11 @@ local function createInvisibleKillerFish()
         global.killer = game.surfaces[1].create_entity{name = "pollution", position = {x = 1, y = 1}, force = game.forces.pollution}
         global.killer.active = false
     end
+    if global.kills == nil then global.kills = 0 end
+end
+
+function showStatistics(event)
+    game.print{"Pollution-kills", global.kills}
 end
 
 script.on_init(function()
@@ -152,6 +157,11 @@ script.on_init(function()
     initArmorAbsorbs()
     initTechAbsorbs()
     createInvisibleKillerFish()
+    commands.add_command("pollution", "toxic pollution commands", showStatistics)
+end)
+
+script.on_load(function()
+    commands.add_command("pollution", "toxic pollution commands", showStatistics)
 end)
 
 script.on_configuration_changed(function()
@@ -203,6 +213,7 @@ script.on_nth_tick(tickInterval, function(event)
                             player.character.damage(damage, game.forces.pollution, "toxin")
                         else
                             player.character.die(game.forces.pollution, global.killer)
+                            gloabl.kills = global.kills + 1
                         end
                     end
                 end
