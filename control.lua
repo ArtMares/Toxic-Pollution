@@ -1,9 +1,12 @@
 local minPollutionToDamage = settings.startup["min-pollution-to-damage"].value
 local armorAbsorbMultiplicator = settings.startup["armor-absorb-multiplicator"].value
 local autoEqipArmor = settings.startup["auto-equip-armor"].value
-local stat = 7200
+local stat = 1500
+local power = 1.25
 
 local tickInterval = 60
+
+local inspect = require("inspect")
 
 local floor = math.floor
 local forceBaseValue = 1
@@ -135,8 +138,16 @@ local function initTechAbsorbs()
     end
 end
 
-local function calculateDamage(pollution, absorb, force)
-    local damage = math.max(pollution - absorb, 0)/stat/global.techAbsorb[force]
+local function calculateAbsorb(armorName, force)
+    if global.armorsAbsorb[armorName] ~= nil then
+        return global.armorsAbsorb[armorName] * global.techAbsorb[force]
+    end
+    return 0
+end
+
+local function calculateDamage(pollution, absorb)
+    local damage = ((pollution - absorb)/stat) ^ power
+--    local damage = math.max(pollution - absorb, 0)/stat/global.techAbsorb[force]
     return damage
 end
 
@@ -145,11 +156,43 @@ local function createInvisibleKillerFish()
         global.killer = game.surfaces[1].create_entity{name = "pollution", position = {x = 1, y = 1}, force = game.forces.pollution}
         global.killer.active = false
     end
-    if global.kills == nil then global.kills = 0 end
+    if global.kills == nil then
+        global.kills = {}
+    else
+        if type(global.kills) == "number" then
+            global.kills = {}
+        end
+    end
+end
+
+local function tablelength(T)
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
+end
+
+local function incKills(player)
+    local kills = global.kills[player]
+    if kills == nil then
+        kills = 1
+    end
+    global.kills[player] = kills
 end
 
 function showStatistics(event)
-    game.print{"Pollution-kills", global.kills}
+    local parameter = event.parameter
+    if parameter ~= nil then
+        if parameter == "kills" then
+            game.print{"Pollution-kills"}
+            if tablelength(global.kills) > 0 then
+                for player, kills in pairs(global.kills) do
+                    game.print(player .. " - " .. kills)
+                end
+            else
+                game.print{"Zero-players"}
+            end
+        end
+    end
 end
 
 script.on_init(function()
@@ -189,9 +232,7 @@ script.on_nth_tick(tickInterval, function(event)
                 local armorCount = getEquipedArmorCount(player)
                 if (armorCount > 0) then
                     armor = getEquipedArmor(player)
-                    if (global.armorsAbsorb[armor.name] ~= nil) then
-                        absorb = absorb + global.armorsAbsorb[armor.name]
-                    end
+                    absorb = calculateAbsorb(armor.name, player.force.name)
                 end
                 if (pollution > absorb) then
                     damage = calculateDamage(pollution, absorb, player.force.name)
@@ -201,7 +242,7 @@ script.on_nth_tick(tickInterval, function(event)
                         alert = 1
                     end
                     if (armor) then
-                        if (armor.durability / game.item_prototypes[armor.name].durability < 0.1 and armorCount == 1) then
+                        if (armor.durability / game.item_prototypes[armor.name].durability < 0.25 and armorCount == 1) then
                             alert = 3
                         end
                         armor.drain_durability(damage)
@@ -213,7 +254,7 @@ script.on_nth_tick(tickInterval, function(event)
                             player.character.damage(damage, game.forces.pollution, "toxin")
                         else
                             player.character.die(game.forces.pollution, global.killer)
-                            global.kills = global.kills + 1
+                            incKills(player.name)
                         end
                     end
                 end
