@@ -34,7 +34,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 end)
 
 script.on_nth_tick(conf:TickInterval(), function(event)
-    toxic:Run()
+    toxic:OnTick()
 end)
 
 script.on_event(defines.events.on_research_finished, function(event)
@@ -42,6 +42,6 @@ script.on_event(defines.events.on_research_finished, function(event)
     toxic:UpdateTech(tech.name, tech.force)
 end)
 
---script.on_event(defines.events.on_player_used_capsule, function(event)
---    toxic:OnUseCapsule(event)
---end)
+script.on_event(defines.events.on_player_died, function(event)
+    toxic:OnPlayerDied(event)
+end)

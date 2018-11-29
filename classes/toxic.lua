@@ -3,8 +3,7 @@ require("util.table")
 require("util.help")
 require("classes.config")
 
-local stat = 1500
-local power = 1.25
+local stat = 10000
 
 function commandHandler(event)
     local parameter = event.parameter
@@ -36,8 +35,10 @@ Toxic = class(function(self)
         ["red-gas-mask"] =      {type="virtual", name="signal-red-gas-mask"},
         ["red-armor"] =         {type="virtual", name="signal-red-armor"}
     }
-    self.maxTime = 15 * Minute
-    self.flow_settings = {type="flow", name="toxic_flow", direction="horizontal", style="slot_table_spacing_horizontal_flow"}
+    self.multiplier = {
+        time = 5 * Minute,
+        max = 60
+    }
 end)
 
 function Toxic:init()
@@ -50,18 +51,20 @@ function Toxic:init()
                 end
                 if (item.resistances and item.resistances.toxin) then
                     global.armors[item.name] = {
-                        base = conf:AbsorbMultiplicator() * math.min(tonumber(string.format("%.2f", item.resistances.toxin.percent)), 0.9),
+                        base = Config:AbsorbMultiplier() * math.min(tonumber(string.format("%.2f", item.resistances.toxin.percent)), 0.9),
+                        resist = item.resistances.toxin.percent
                     }
                 else
                     global.armors[item.name] = {
-                        base = 0
+                        base = 0,
+                        resist = 0
                     }
                 end
                 global.armors[item.name].current = global.armors[item.name].base
             end
         end
         for _, force in pairs(game.forces) do
-            global.TechBonus[force.name] = conf:ForceBaseValue()
+            global.TechBonus[force.name] = Config:ForceBaseValue()
             for _, tech in pairs(force.technologies) do
                 if (tech.researched == true) then self:UpdateTech(tech.name, force) end
             end
@@ -160,8 +163,8 @@ end
 
 function Toxic:UpdateTech(tech, force)
     local n = string.match(tech, "armor%-absorb%-(%d)")
-    if n ~= nil then
-        local bonus = conf:ForceBaseValue() + tonumber(n) * conf:TechBonus()
+    if n ~= "" then
+        local bonus = Config:ForceBaseValue() + tonumber(n) * Config:TechBonus()
         global.TechBonus[force.name] = bonus
         self:ReCalculateAbsorb(force.name)
         return true
@@ -182,25 +185,23 @@ function Toxic:IncKills(player)
     global.kills[player] = kills
 end
 
-function Toxic:CalculateDamage(pollution, absorb)
-    return ((pollution - absorb)/stat) ^ power
-end
+function Toxic:CalculateDamage(player, pollution, armor)
+    local m = self:GetTimeMultiplier(player)
+    if armor ~= nil then
+        if m > 0 then
 
-function Toxic:CalculateDamageWithTime(player, pollution, absorb)
-    local d = self:CalculateDamage(pollution, absorb)
-    return d * self:GetTimeMultiplicator(player)
+            return
+        end
+    end
+    return ((pollution - absorb)/stat) ^ power
 end
 
 function Toxic:IsActiveAirFiltering()
     return game.active_mods["air-filtering-patched"] ~= nil
 end
 
-function Toxic:IsAquaFarm()
-    return game.active_mods["VersepellesAquaFarm015"] ~= nil
-end
-
 function Toxic:EquipArmorFromInventory(player, armor)
-    if (armor.is_armor == false and conf:IsAutoEquip()) then
+    if (armor.is_armor == false and Config:IsAutoEquip()) then
         local durability = global.MaxDurability
         local newArmor = {id = 0, index = 0 }
         for id, inventoryType in pairs(self.inventory) do
@@ -226,85 +227,82 @@ function Toxic:EquipArmorFromInventory(player, armor)
     end
 end
 
-function Toxic:IncTimeMultiplicator(player, ticks)
+function Toxic:IncTimeMultiplier(player, ticks)
     local data = global.PlayersData[player]
     if data == nil then
-        data = { ticks = 0, multiplicator = 1 }
+        data = { ticks = 0, multiplier = 1 }
     end
     if data.ticks < self.maxTime then
         data.ticks = data.ticks + ticks
-        data = self:UpdateTimeMultiplicator(data)
+        data = self:UpdateTimeMultiplier(data)
     end
     global.PlayersData[player] = data
 end
 
-function Toxic:DecTimeMultiplicator(player, ticks)
+function Toxic:DecTimeMultiplier(player, ticks)
     local data = global.PlayersData[player]
     if data ~= nil then
         data.ticks = data.ticks - ticks
         if data.ticks < 0 then data.ticks = 0 end
-        data = self:UpdateTimeMultiplicator(data)
+        data = self:UpdateTimeMultiplier(data)
         global.PlayersData[player] = data
     end
 end
 
-function Toxic:GetTimeMultiplicator(player)
+function Toxic:GetTimeMultiplier(player)
     local data = global.PlayersData[player]
     if data ~= nil then
-        return data.multiplicator
+        return data.multiplier
     end
-    return 1
+    return 0
 end
 
-function Toxic:UpdateTimeMultiplicator(data)
-    local m = string.format("%.2f", data.ticks/self.maxTime)
-    data.multiplicator = 1 + tonumber(m)
+function Toxic:UpdateTimeMultiplier(data)
+    local m = data.ticks/self.multiplier.time
+    m = self.multiplier.max*m
+    if m % 1 == 0 then data.multiplier = m end
     return data
 end
 
-function Toxic:Run()
+function Toxic:OnTick()
     for _, player in pairs(game.players) do
         if (player.connected == true and player.character ~= nil) then
             local alert = 0
             local pollution = self:GetPollution(player)
+            local newPollution = 0
             local damage = 0
-            if (pollution > 0) then
-                local absorb = conf:MinPollution()
-                local armorCount, armor = self:GetPlayerArmor(player)
-                if armorCount > 0 then
-                    absorb = absorb + self:GetArmorAbsorb(armor.name)
-                end
-                if (pollution > absorb) then
-                    if self:IsActiveAirFiltering() then
-                        self:IncTimeMultiplicator(player.name, conf:TickInterval())
-                        damage = self:CalculateDamageWithTime(player.name, pollution, absorb)
-                    else
-                        damage = self:CalculateDamage(pollution, absorb)
-                    end
-                    if damage > 20 then
-                        alert = 2
-                    else
-                        alert = 1
-                    end
-                    if armor then
-                        if (armor.durability / game.item_prototypes[armor.name].durability < 0.25 and armorCount == 1) then
-                            alert = 3
-                        end
-                        armor.drain_durability(damage)
-                        self:EquipArmorFromInventory(player, armor)
-                    else
-                        alert = 2
-                        damage = math.floor(pollution / absorb)
-                        if (player.character.health > damage) then
-                            player.character.damage(damage, game.forces.pollution, "toxin")
-                        else
-                            player.character.die(game.forces.pollution, global.killer)
-                            self:IncKills(player.name)
-                        end
-                    end
-                end
+            local absorb = Config:MinPollution()
+            local armorCount, armor = self:GetPlayerArmor(player)
+            if armorCount > 0 then absorb = absorb + self:GetArmorAbsorb(armor.name) end
+            if (pollution > absorb) then
+                newPollution = pollution - absorb
+            end
+            if (newPollution > 0) then
+                self:IncTimeMultiplier(player.name, Config:TickInterval())
             else
-
+                self:DecTimeMultiplier(player.name, Config:TickInterval())
+            end
+            damage = self:CalculateDamage(player.name, pollution, armor)
+            if damage > 20 then
+                alert = 2
+            else
+                alert = 1
+            end
+            if armor then
+                if (armor.durability / game.item_prototypes[armor.name].durability < 0.25 and armorCount == 1) then
+                    alert = 3
+                end
+                armor.drain_durability(damage)
+                self:EquipArmorFromInventory(player, armor)
+            else
+                alert = 2
+                damage = math.floor(pollution / absorb)
+                if (player.character.health > damage) then
+                    player.character.damage(damage, game.forces.pollution, "toxin")
+                else
+                    player.character.die(game.forces.pollution, global.killer)
+                    self:IncKills(player.name)
+                end
             end
             if alert == 1 then
                 self:AddAlert(player, "yellow-gas-mask", {"High-pollution", pollution, string.format("%.2f", damage)})
@@ -321,37 +319,10 @@ function Toxic:Run()
     end
 end
 
---function Toxic:CreateButton(player)
---    local gui = player.gui.top
---    local flow = self:GetFlow(gui)
---    self:GetButton(flow, "Toxic_Time_Multiplicator")
---end
---
---function Toxic:RefreshButton(player)
---    local gui = player.gui.top
---    local flow = self:GetFlow(gui)
---    local button = self:GetButton(flow, "Toxic_Time_Multiplicator")
---    button.caption = "x" .. self:GetTimeMultiplicator(player.name)
---end
---
---function Toxic:GetFlow(gui)
---    local flow = gui.toxic_flow
---    if not flow then
---        flow = gui.add(self.flow_settings)
---        flow.style.left_padding = 0
---        flow.style.top_padding = 0
---    end
---    return flow
---end
---
---function Toxic:GetButton(gui, name)
---    local button = gui[name]
---    if not button then
---        button = gui.add({
---            type = "button",
---            name = name
---        })
---    end
---    button.style.visible = true
---    return button
---end
+function Toxin:OnPlayerDied(event)
+    local player = game.players[event.player_index]
+    local entity = event.cause
+    if (entity ~= nil and entity.name == "pollution") then
+        self.IncKills(player.name)
+    end
+end

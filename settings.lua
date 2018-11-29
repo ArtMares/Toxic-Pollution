@@ -2,7 +2,7 @@ data:extend(
 {
     {
         type = "int-setting",
-        name = "armor-absorb-multiplicator",
+        name = "armor-absorb-multiplier",
         setting_type = "startup",
         default_value = 5000,
         maximum_value = 100000,
