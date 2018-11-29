@@ -23,14 +23,14 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 --    for name, version in pairs(game.active_mods) do
 --        game.print(name .. " version " ..version)
 --    end
-    for _, item in pairs(game.item_prototypes) do
-        if item.type == "armor" then
-            if (item.resistances and item.resistances.toxin) then
-                game.print(item.name)
-                game.print(item.resistances.toxin.percent)
-            end
-        end
-    end
+--    for _, item in pairs(game.item_prototypes) do
+--        if item.type == "armor" then
+--            if (item.resistances and item.resistances.toxin) then
+--                game.print(item.name)
+--                game.print(item.resistances.toxin.percent)
+--            end
+--        end
+--    end
 end)
 
 script.on_nth_tick(conf:TickInterval(), function(event)

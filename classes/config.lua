@@ -2,18 +2,21 @@ require("util.class")
 
 Config = class(function(self)
     self.name = "Config"
+    self.minPollution = settings.startup["min-pollution-to-damage"].value
+    self.absorbMultiplier = settings.startup["armor-absorb-multiplier"].value
+    self.isAutoEquip = settings.startup["auto-equip-armor"].value
 end)
 
 function Config:MinPollution()
-    return settings.startup["min-pollution-to-damage"].value
+    return self.minPollution
 end
 
 function Config:AbsorbMultiplier()
-    return settings.startup["armor-absorb-multiplier"].value
+    return self.absorbMultiplier
 end
 
 function Config:IsAutoEquip()
-    return settings.startup["auto-equip-armor"].value
+    return self.isAutoEquip
 end
 
 function Config:ForceBaseValue()
