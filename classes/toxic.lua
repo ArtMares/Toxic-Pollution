@@ -34,7 +34,8 @@ Toxic = class(function(self)
     self.Signals = {
         ["yellow-gas-mask"] =   {type="virtual", name="signal-yellow-gas-mask"},
         ["red-gas-mask"] =      {type="virtual", name="signal-red-gas-mask"},
-        ["red-armor"] =         {type="virtual", name="signal-red-armor"}
+        ["red-armor"] =         {type="virtual", name="signal-red-armor"},
+        ["yellow-more-toxin"] = {type="virtual", name="signal-yellow-more-toxin"}
     }
     self.multiplier = {
         time = 5 * Minute,
@@ -307,16 +308,19 @@ function Toxic:DamageForPlayer(player)
         self:IncTimeMultiplier(player.name, conf:TickInterval())
         data.pollution = newPollution
         damage = self:CalculateDamage(player.name, newPollution, armor)
-    else
-        self:DecTimeMultiplier(player.name, conf:TickInterval())
-        damage = self:CalculateDamage(player.name, data.pollution, armor)
-    end
-    if damage > 0 then
         if damage > 20 then
             alert = 2
         else
             alert = 1
         end
+    else
+        self:DecTimeMultiplier(player.name, conf:TickInterval())
+        damage = self:CalculateDamage(player.name, data.pollution, armor)
+        if damage > 0 and alert == 0 then
+            alert = 4
+        end
+    end
+    if damage > 0 then
         if armor then
             if (armor.durability / game.item_prototypes[armor.name].durability < 0.25 and armorCount == 1) then
                 alert = 3
@@ -337,6 +341,8 @@ function Toxic:DamageForPlayer(player)
         self:AddAlert(player, "red-gas-mask", {"Very-high-pollution", pollution, string.format("%.2f", damage), data.multiplier})
     elseif alert == 3 then
         self:AddAlert(player, "red-armor", {"Armor-worn-out", pollution, string.format("%.2f", damage), data.multiplier})
+    elseif alert == 4 then
+        self:AddAlert(player, "yellow-more-toxin", {"Accumulated-toxins", string.format("%.2f", damage), data.multiplier})
     else
         self:RemoveAlert(player, "yellow-gas-mask")
         self:RemoveAlert(player, "red-gas-mask")

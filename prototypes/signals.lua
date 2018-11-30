@@ -29,5 +29,13 @@ data:extend(
         icon_size = 32,
         subgroup = "virtual-signal-dp",
         order = "c"
+    },
+    {
+        type = "virtual-signal",
+        name = "signal-yellow-more-toxin",
+        icon = "__toxicPollution__/graphics/signal-yellow-more-toxin.png",
+        icon_size = 32,
+        subgroup = "virtual-signal-dp",
+        order = "d"
     }
 })
