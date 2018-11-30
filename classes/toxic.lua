@@ -328,7 +328,6 @@ function Toxic:DamageForPlayer(player)
                 player.character.damage(damage, game.forces.pollution, "toxin")
             else
                 player.character.die(game.forces.pollution, global.killer)
-                --self:IncKills(player.name)
             end
         end
     end
