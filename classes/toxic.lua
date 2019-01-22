@@ -1,6 +1,7 @@
 require("util.class")
 require("util.table")
 require("util.help")
+require('util.tech')
 require("classes.config")
 local inspect = require("inspect")
 
@@ -67,8 +68,11 @@ function Toxic:init()
         end
         for _, force in pairs(game.forces) do
             global.TechBonus[force.name] = conf:ForceBaseValue()
-            for _, tech in pairs(force.technologies) do
-                if (tech.researched == true) then self:UpdateTech(tech.name, force) end
+            for i = 1, TechLevels do
+                local tech = force.technologies[TechName.."-"..i]
+                if tech then
+                    if tech.researched == true then self:UpdateTech(tech.name, force) end
+                end
             end
         end
         self:initForce()
@@ -183,7 +187,7 @@ function Toxic:GetArmorAbsorb(armor)
 end
 
 function Toxic:UpdateTech(tech, force)
-    local n = string.match(tech, "armor%-absorb%-(%d)")
+    local n = string.match(tech, "armor%-absorb%-(%d+)")
     if n ~= nil then
         local bonus = conf:ForceBaseValue() + tonumber(n) * conf:TechBonus()
         global.TechBonus[force.name] = bonus

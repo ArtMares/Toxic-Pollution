@@ -1,12 +1,17 @@
 require("classes.toxic")
+require("classes.detector")
 
 local inspect = require("inspect")
 
+local interval = 1
+
 local toxic = Toxic()
+local detector = Detector(interval)
 
 script.on_init(function()
     toxic:init()
     toxic:initCommands()
+    detector:init()
 end)
 
 script.on_load(function()
@@ -15,26 +20,36 @@ end)
 
 script.on_configuration_changed(function()
     toxic:init()
+    detector:init()
     toxic:migrate(game.active_mods["toxicPollution"])
 end)
 
 script.on_event(defines.events.on_player_joined_game, function(event)
     toxic:init()
---    for name, version in pairs(game.active_mods) do
---        game.print(name .. " version " ..version)
---    end
---    for _, item in pairs(game.item_prototypes) do
---        if item.type == "armor" then
---            if (item.resistances and item.resistances.toxin) then
---                game.print(item.name)
---                game.print(item.resistances.toxin.percent)
---            end
---        end
---    end
+    detector:init()
 end)
 
-script.on_nth_tick(conf:TickInterval(), function(event)
-    toxic:OnTick()
+script.on_nth_tick(interval, function(event)
+    if event.tick % conf:TickInterval() == 0 then
+        toxic:OnTick()
+    end
+    detector:OnTick(event)
+end)
+
+script.on_event(defines.events.on_gui_closed, function(event)
+    detector:OnGuiClosed(event)
+end)
+
+script.on_event(defines.events.on_entity_settings_pasted, function(event)
+    detector:OnSettingPasted(event)
+end)
+
+script.on_event({defines.events.on_robot_build_entity, defines.events.on_build_entity}, function(event)
+    detector:OnBuild(event)
+end)
+
+script.on_event({defines.events.on_robot_mined_entity, defines.events.on_player_mined_entity}, function(event)
+    detector:DeleteEntity(event.entity)
 end)
 
 script.on_event(defines.events.on_research_finished, function(event)

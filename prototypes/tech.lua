@@ -1,4 +1,4 @@
-local function getIngridients(num)
+local function getIngredients(num)
     local res = {}
     local c = math.floor(num / 5)
     table.insert(res, {"science-pack-1", 1})
@@ -17,10 +17,12 @@ local function getIngridients(num)
     return res
 end
 
+require('util.tech')
+
 data:extend({
     {
         type = "technology",
-        name = "armor-absorb-1",
+        name = TechName .. "-1",
         icon = "__toxicPollution__/graphics/gas-time-research.png",
         icon_size = 128,
         effects = {
@@ -28,7 +30,7 @@ data:extend({
         },
         unit = {
             count = 10,
-            ingredients = getIngridients(1),
+            ingredients = getIngredients(1),
             time = 5
         },
         upgrade = true,
@@ -36,11 +38,11 @@ data:extend({
     }
 })
 
-for i = 2, 25 do
+for i = 2, TechLevels do
     data:extend({
         {
             type = "technology",
-            name = "armor-absorb-"..i,
+            name = TechName .. "-" .. i,
             icon = "__toxicPollution__/graphics/gas-time-research.png",
             icon_size = 128,
             effects = {
@@ -49,7 +51,7 @@ for i = 2, 25 do
             prerequisites = {"armor-absorb-"..(i - 1)},
             unit = {
                 count = i*10,
-                ingredients = getIngridients(i),
+                ingredients = getIngredients(i),
                 time = i*5
             },
             upgrade = true,
