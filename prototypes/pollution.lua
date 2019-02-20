@@ -20,4 +20,4 @@ for _, d in pairs(data.raw["damage-type"]) do
     })
 end
 
-data:extend(fish)
+data:extend({fish})
