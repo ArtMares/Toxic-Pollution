@@ -24,7 +24,8 @@ data:extend({
         ingredients = {
             {"iron-plate", 2},
             {"wood", 1},
-            {"coal", 2}},
+            {"coal", 2}
+        },
         result = "respirator"
     }
 })

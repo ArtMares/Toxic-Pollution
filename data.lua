@@ -1,7 +1,9 @@
 if not ToxinPollution then ToxinPollution = {} end
 
-require ("data.damage")
-require ("data.signals")
-require ("data.items")
-require ("data.tech")
-require ("data.pollution")
+require("util.table")
+
+require("prototypes.damage")
+require("prototypes.signals")
+require("prototypes.items")
+require("prototypes.tech")
+require("prototypes.pollution")

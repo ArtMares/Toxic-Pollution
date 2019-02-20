@@ -1,10 +1,10 @@
 {
     "name": "toxicPollution",
-    "version": "0.2.6",
+    "version": "0.3.0",
     "title": "Toxic Pollution",
     "factorio_version": "0.16",
     "author": "Likos, ArtMares, ViridiVir",
-    "homepage": "https://github.com/ArtMares/deadlyPollution",
+    "homepage": "https://github.com/ArtMares/toxicPollution",
     "description": "Now pollution will damage player without armor",
     "dependencies": [
         "base >= 0.16.0",
