@@ -122,7 +122,7 @@ function Toxic:initCommands()
 end
 
 function Toxic:initKillerFish()
-    if (global.killer == nil) then
+    if global.killer == nil or (global.killer ~= nil and global.killer.valid == false) then
         global.killer = game.surfaces[1].create_entity{name = "pollution", position = {x = 1, y = 1}, force = game.forces.pollution }
         global.killer.active = false
     end
@@ -335,6 +335,7 @@ function Toxic:DamageForPlayer(player)
             if (player.character.health > damage) then
                 player.character.damage(damage, game.forces.pollution, "toxin")
             else
+                self:initKillerFish()
                 player.character.die(game.forces.pollution, global.killer)
             end
         end
