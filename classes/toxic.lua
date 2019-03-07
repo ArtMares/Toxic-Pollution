@@ -3,7 +3,6 @@ require("util.table")
 require("util.help")
 require('util.tech')
 require("classes.config")
-local inspect = require("inspect")
 
 local stat = 10000
 

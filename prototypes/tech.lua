@@ -1,18 +1,18 @@
 local function getIngredients(num)
     local res = {}
     local c = math.floor(num / 5)
-    table.insert(res, {"science-pack-1", 1})
+    table.insert(res, {"automation-science-pack", 1})
     if (c > 0) then
-        table.insert(res, {"science-pack-2", 1})
+        table.insert(res, {"logistic-science-pack", 1})
     end
     if (c > 1) then
         table.insert(res, {"military-science-pack", 1})
     end
     if (c > 2) then
-        table.insert(res, {"science-pack-3", 1})
+        table.insert(res, {"chemical-science-pack", 1})
     end
     if (c > 3) then
-        table.insert(res, {"high-tech-science-pack", 1})
+        table.insert(res, {"utility-science-pack", 1})
     end
     return res
 end

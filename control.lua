@@ -1,8 +1,6 @@
 require("classes.toxic")
 require("classes.detector")
 
-local inspect = require("inspect")
-
 local interval = 1
 
 local toxic = Toxic()

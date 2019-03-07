@@ -4,7 +4,6 @@ data:extend({
         name = "respirator",
         icon = "__toxicPollution__/graphics/respirator.png",
         icon_size = 64,
-        flags = {"goes-to-main-inventory"},
         resistances = {
             {type = "physical",     decrease = 0, percent = 0},
             {type = "acid",         decrease = 0, percent = 0},
