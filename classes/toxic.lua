@@ -27,9 +27,8 @@ conf = Config()
 Toxic = class(function(self)
     self.name = "Toxic Pollution"
     self.inventory = {
-        defines.inventory.player_main,
-        defines.inventory.player_quickbar,
-        defines.inventory.player_trash
+        defines.inventory.character_main,
+        defines.inventory.character_trash
     }
     self.Signals = {
         ["yellow-gas-mask"] =   {type="virtual", name="signal-yellow-gas-mask"},
@@ -168,7 +167,7 @@ function Toxic:GetPollution(player)
 end
 
 function Toxic:GetPlayerArmor(player)
-    local inv = player.get_inventory(defines.inventory.player_armor)
+    local inv = player.get_inventory(defines.inventory.character_armor)
     local count = inv.get_item_count()
     if count > 0 then
         return count, inv[1]
@@ -218,6 +217,7 @@ function Toxic:CalculateDamage(player, pollution, armor)
     else
         damage = pollution/conf:MinPollution() * m
     end
+    game.print(damage)
     return damage
 end
 
@@ -304,6 +304,7 @@ function Toxic:DamageForPlayer(player)
     local data = global.PlayersData[player.name]
 
     if armorCount > 0 then absorb = absorb + self:GetArmorAbsorb(armor.name) end
+    game.print(absorb)
     if (pollution > absorb) then
         newPollution = pollution - absorb
     end
