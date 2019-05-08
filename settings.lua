@@ -19,7 +19,7 @@ data:extend(
     {
         type = "bool-setting",
         name = "auto-equip-armor",
-        setting_type = "runtime-global",
+        setting_type = "runtime-per-user",
         default_value = true
     }
 }

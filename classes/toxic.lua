@@ -226,7 +226,7 @@ function Toxic:IsActiveAirFiltering()
 end
 
 function Toxic:EquipArmorFromInventory(player, armor)
-    if (armor.is_armor == false and conf:IsAutoEquip()) then
+    if (armor.is_armor == false and conf:IsAutoEquip(player)) then
         local durability = global.MaxDurability
         local newArmor = {id = 0, index = 0 }
         for id, inventoryType in pairs(self.inventory) do
