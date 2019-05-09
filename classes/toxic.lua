@@ -217,7 +217,6 @@ function Toxic:CalculateDamage(player, pollution, armor)
     else
         damage = pollution/conf:MinPollution() * m
     end
-    game.print(damage)
     return damage
 end
 
@@ -304,7 +303,6 @@ function Toxic:DamageForPlayer(player)
     local data = global.PlayersData[player.name]
 
     if armorCount > 0 then absorb = absorb + self:GetArmorAbsorb(armor.name) end
-    game.print(absorb)
     if (pollution > absorb) then
         newPollution = pollution - absorb
     end
