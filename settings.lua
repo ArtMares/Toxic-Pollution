@@ -21,6 +21,12 @@ data:extend(
         name = "auto-equip-armor",
         setting_type = "runtime-per-user",
         default_value = true
+    },
+    {
+        type = "bool-settings",
+        name = "equip-respirator-when-respawn",
+        settings_type = "runtime-per-user",
+        default_value = false
     }
 }
 )

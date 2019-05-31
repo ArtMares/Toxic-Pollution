@@ -58,3 +58,7 @@ end)
 script.on_event(defines.events.on_player_died, function(event)
     toxic:OnPlayerDied(event)
 end)
+
+script.on_event(defines.events.on_player_respawned, function(event)
+    toxic:OnPlayerRespawned(event)
+end)

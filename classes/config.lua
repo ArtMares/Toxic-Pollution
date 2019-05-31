@@ -18,6 +18,10 @@ function Config:IsAutoEquip(player)
     return settings.get_player_settings(player)["auto-equip-armor"].value
 end
 
+function Config:IsEquipRespiratorWhenRespawn(player)
+    return settings.get_player_settings(player)["equip-respirator-when-respawn"].value
+end
+
 function Config:ForceBaseValue()
     return 1.0
 end

@@ -420,3 +420,9 @@ function Toxic:OnPlayerDied(event)
         self:ClearTimeMultiplier(player.name)
     end
 end
+
+function Toxic:OnPlayerRespawned(event)
+    local player = game.players[event.player_index]
+    local inv = player.get_inventory(defines.inventory.character_ammo)
+    inv.insert({name="respirator", count=1})
+end
