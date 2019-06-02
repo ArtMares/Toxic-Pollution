@@ -23,7 +23,7 @@ data:extend(
         default_value = true
     },
     {
-        type = "bool-settings",
+        type = "bool-setting",
         name = "equip-respirator-when-respawn",
         settings_type = "runtime-per-user",
         default_value = false
