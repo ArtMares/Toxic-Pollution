@@ -1,2 +1,5 @@
 # JetBrains IDE Project Files
 .idea
+
+# VSCode Project files
+.vscode
