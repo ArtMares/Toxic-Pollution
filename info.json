@@ -5,9 +5,9 @@
     "factorio_version": "0.18",
     "author": "Likos, ArtMares",
     "homepage": "https://github.com/ArtMares/toxicPollution",
-    "description": "Now pollution will damage player without armor",
+    "description": "Pollution deals damage to a player",
     "dependencies": [
-        "base >= 0.18.00",
+        "base >= 0.18.0",
         "? air-filtering-patched >=  0.18.0",
         "? Power Armor MK3 >= 0.1.9",
         "? bobwarfare >= 0.17.0"

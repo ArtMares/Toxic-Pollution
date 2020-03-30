@@ -11,10 +11,11 @@ data:extend({
             {type = "fire",         decrease = 0, percent = 0},
             {type = "toxin",        decrease = 0, percent = 5}
         },
-        durability = 500,
+        --durability = 500,
+        infinite = true,
         subgroup = "armor",
         order = "f[hazard]",
-        stack_size = 10
+        -- stack_size = 10
     },
     {
         type = "recipe",

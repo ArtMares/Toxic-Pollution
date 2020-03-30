@@ -1,8 +1,6 @@
-data:extend(
-{
+data:extend({
     {
         type = "damage-type",
         name = "toxin"
     }
-}
-)
+})

@@ -18,15 +18,26 @@ local armorsToxin = {
     {name = "bob-power-armor-mk5",  decrease = 0, percent = 50, durability = 50000}
 }
 
-for _, resist in pairs(armorsToxin) do
-    local items = data.raw.armor
-    local armor = items[resist.name]
-    if armor then
-        table.insert(armor.resistances, {type = "toxin", decrease = resist.decrease, percent = resist.percent})
-		armor.durability = resist.durability
-		armor.infinite = false
-		if (resist.name:find("modular") == nil and resist.name:find("power") == nil) then
-			armor.stack_size = 10
-		end
+for _, armor in pairs(data.raw.armor) do
+    if armor.name ~= "respirator" then
+        for _, resist in pairs(armor.resistances) do
+            if resist.type == "acid" then
+                table.insert(armor.resistances, {type = "toxin", decrease = 0, percent = resist.percent})
+                break
+            end
+        end
     end
 end
+
+-- for _, resist in pairs(armorsToxin) do
+--     local items = data.raw.armor
+--     local armor = items[resist.name]
+--     if armor then
+--         table.insert(armor.resistances, {type = "toxin", decrease = resist.decrease, percent = resist.percent})
+-- 		--armor.durability = resist.durability
+-- 		--armor.infinite = false
+-- 		if (resist.name:find("modular") == nil and resist.name:find("power") == nil) then
+-- 			armor.stack_size = 10
+-- 		end
+--     end
+-- end
