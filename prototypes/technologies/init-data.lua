@@ -1,1 +1,1 @@
-print("Loading technologies prototypes")
+log("Loading technologies prototypes")

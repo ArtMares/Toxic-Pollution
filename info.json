@@ -8,6 +8,7 @@
     "description": "Pollution deals damage to a player",
     "dependencies": [
         "base >= 0.18.0",
+        "hfbml >= 0.18.0",
         "? air-filtering-patched >=  0.18.0",
         "? Power Armor MK3 >= 0.1.9",
         "? bobwarfare >= 0.17.0"
